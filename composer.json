@@ -1,0 +1,46 @@
+{
+  "name": "knight/artifact-entity-adapter-arangodb",
+  "type": "library",
+  "description": "Knight PHP artifact entity adapter arangodb",
+  "keywords": [
+    "ubyte",
+    "database",
+    "knight",
+    "artifact",
+    "entity",
+    "adapter",
+    "arangodb"
+  ],
+  "homepage": "https://github.com/energia-source/knight-artifact-entity-adapter-arangodb",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Paolo Fabris",
+      "email": "support@ubyte.it",
+      "homepage": "https://www.ubyte.it/",
+      "role": "Developer"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "ArangoDB\\": "lib/"
+    }
+  },
+  "require": {
+    "php": ">=7.3",
+    "ext-mbstring": "*",
+    "triagens/arangodb": "*",
+    "energia-source/knight-armor": ">=2.0.1",
+    "energia-source/knight-artifact-entity": ">=5.0.1"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/energia-source/knight-armor"
+    },
+    {
+      "type": "vcs",
+      "url": "https://github.com/energia-source/knight-artifact-entity"
+    }
+  ]
+}
