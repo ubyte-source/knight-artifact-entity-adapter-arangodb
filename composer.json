@@ -30,8 +30,8 @@
     "php": ">=7.3",
     "ext-mbstring": "*",
     "triagens/arangodb": "*",
-    "energia-source/knight-armor": ">=2.0.1",
-    "energia-source/knight-artifact-entity": ">=5.0.1"
+    "knight/armor": ">=2.0.1",
+    "knight/artifact-entity": ">=5.0.1"
   },
   "repositories": [
     {
