@@ -11,9 +11,8 @@ use ArangoDB\entity\Edge;
 use ArangoDB\entity\Vertex;
 use ArangoDB\entity\common\Arango;
 use ArangoDB\operations\Shortestpath;
-use ArangoDB\operations\common\Document;
+use ArangoDB\operations\common\base\Document;
 use ArangoDB\operations\common\Base;
-use ArangoDB\operations\common\choose\ShowReturn;
 use ArangoDB\operations\common\choose\Strict;
 use ArangoDB\operations\common\choose\Limit;
 use ArangoDB\operations\features\Match;
@@ -33,12 +32,10 @@ abstract class Choose extends Base
     protected $with_collections = []; // (array)
     protected $variable_start;        // (string)
     protected $limit;                 // Limit
-    protected $return;                // ShowReturn
 
     public function __construct(Initiator $core, ...$arguments)
     {
         parent::__construct($core, ...$arguments);
-        $this->setReturn(new ShowReturn());
         $this->setLimit(new Limit());
     }
 
@@ -64,9 +61,10 @@ abstract class Choose extends Base
         return $smooth;
     }
 
-    public function pushWithCollection(string ...$with_collections) : int
+    public function pushWithCollection(string ...$with_collections) : self
     {
-        return array_push($this->with_collections, ...$with_collections);
+        array_push($this->with_collections, ...$with_collections);
+        return $this;
     }
 
     public function getLimit() : Limit
@@ -74,12 +72,7 @@ abstract class Choose extends Base
         return $this->limit;
     }
 
-    public function getReturn() : ShowReturn
-    {
-        return $this->return;
-    }
-
-    public function run() : array
+    public function run() :? array
     {
         return $this->getStatement()->execute();
     }
@@ -213,11 +206,6 @@ abstract class Choose extends Base
     protected function setLimit(Limit $limit) : void
     {
         $this->limit = $limit;
-    }
-
-    protected function setReturn(ShowReturn $return) : void
-    {
-        $this->return = $return;
     }
 
     protected function getWith() : bool

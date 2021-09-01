@@ -82,10 +82,10 @@ final class Initiator
         return $this->adapter;
     }
 
-    protected function push(Vertex ...$vertices) : int
+    protected function push(Vertex ...$vertices) : void
     {
         $first = $this->begin();
-        if (null === $first) return 1;
+        if (null === $first) return;
 
         $name = $first->getReflection()->getName();
         foreach ($vertices as $vertex) {
@@ -94,7 +94,7 @@ final class Initiator
             if ($vertex->hasAdapter()) $vertex->setContainer($first->getContainer());
         }
 
-        return array_push($this->start, ...$vertices);
+        array_push($this->start, ...$vertices);
     }
 
     public function getStart() : array

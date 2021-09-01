@@ -5,7 +5,7 @@ namespace ArangoDB\operations\features;
 use Entity\Map as Entity;
 
 use ArangoDB\Statement;
-use ArangoDB\operations\common\Document;
+use ArangoDB\operations\common\base\Document;
 
 trait Match
 {
@@ -65,9 +65,10 @@ trait Match
         return array_filter($response);
     }
 
-    public function pushEntitiesUsingOr(Entity ...$or) : int
+    public function pushEntitiesUsingOr(Entity ...$or) : self
     {
-        return array_push($this->or, ...$or);
+        array_push($this->or, ...$or);
+        return $this;
     }
 
     protected function getEntitiesUsingOr() : array

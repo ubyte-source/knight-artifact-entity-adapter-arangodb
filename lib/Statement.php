@@ -5,7 +5,7 @@ namespace ArangoDB;
 use ArangoDB\common\Configuration;
 use ArangoDB\entity\Edge;
 use ArangoDB\entity\common\Arango;
-use ArangoDB\operations\common\Document;
+use ArangoDB\operations\common\base\Document;
 
 use ArangoDBClient\Connection;
 use ArangoDBClient\Statement as ClientStatement;

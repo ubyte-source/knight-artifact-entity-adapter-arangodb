@@ -11,7 +11,7 @@ use ArangoDB\entity\Edge;
 use ArangoDB\entity\Vertex;
 use ArangoDB\parser\Route;
 use ArangoDB\parser\Traversal;
-use ArangoDB\operations\common\Document;
+use ArangoDB\operations\common\base\Document;
 
 class Parser
 {
@@ -191,19 +191,19 @@ class Parser
         $this->start = $start;
     }
 
-    protected function pushRoutes(Route ...$routes) : int
+    protected function pushRoutes(Route ...$routes) : void
     {
-        return array_push($this->routes, ...$routes);
+        array_push($this->routes, ...$routes);
     }
 
-    protected function pushEdges(Edge ...$edges) : int
+    protected function pushEdges(Edge ...$edges) : void
     {
-        return array_push($this->edges, ...$edges);
+        array_push($this->edges, ...$edges);
     }
 
-    protected function pushEdgesTargets(Edge ...$edges_targets) : int
+    protected function pushEdgesTargets(Edge ...$edges_targets) : void
     {
-        return array_push($this->edges_targets, ...$edges_targets);
+        array_push($this->edges_targets, ...$edges_targets);
     }
 
     private function traversals(Edge ...$edges) : array

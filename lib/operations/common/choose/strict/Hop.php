@@ -3,7 +3,7 @@
 namespace ArangoDB\operations\common\choose\strict;
 
 use ArangoDB\entity\Edge;
-use ArangoDB\operations\common\Document;
+use ArangoDB\operations\common\base\Document;
 
 class Hop
 {

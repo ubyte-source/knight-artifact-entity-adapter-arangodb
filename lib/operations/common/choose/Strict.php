@@ -10,7 +10,7 @@ use ArangoDB\Parser;
 use ArangoDB\Statement;
 use ArangoDB\entity\Edge;
 use ArangoDB\entity\common\Arango;
-use ArangoDB\operations\common\Document;
+use ArangoDB\operations\common\base\Document;
 use ArangoDB\operations\common\Choose;
 use ArangoDB\operations\common\choose\strict\Condition;
 use ArangoDB\operations\common\choose\strict\Hop;

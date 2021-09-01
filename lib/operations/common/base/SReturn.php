@@ -1,10 +1,10 @@
 <?PHP
 
-namespace ArangoDB\operations\common\choose;
+namespace ArangoDB\operations\common\base;
 
 use ArangoDB\Statement;
 
-class ShowReturn
+class SReturn
 {
     const BIND_PREFIX = '$';
     const BIND_PREFIX_REGEX = '/\\' . self::BIND_PREFIX . '(\d+)/';

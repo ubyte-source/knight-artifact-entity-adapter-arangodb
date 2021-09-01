@@ -1,6 +1,6 @@
 <?PHP
 
-namespace ArangoDB\operations\common;
+namespace ArangoDB\operations\common\base;
 
 use Entity\Map as Entity;
 

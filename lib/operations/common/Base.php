@@ -5,6 +5,7 @@ namespace ArangoDB\operations\common;
 use ArangoDB\Initiator;
 use ArangoDB\Statement;
 use ArangoDB\entity\common\Arango;
+use ArangoDB\operations\common\base\SReturn;
 use ArangoDB\operations\common\interfaces\Base as BaseInterface;
 
 abstract class Base implements BaseInterface
@@ -14,6 +15,7 @@ abstract class Base implements BaseInterface
     protected $core;                // Initiator
     protected $skip_statement = []; // (array)
     protected $pointers = [];       // (array)
+    protected $return;              // SReturn
 
     public function __clone()
     {
@@ -32,19 +34,26 @@ abstract class Base implements BaseInterface
     public function __construct(Initiator $core, ...$arguments)
     {
         $this->setCore($core);
+        $this->setReturn(new SReturn());
     }
 
-    final public function pushStatementSkipValues(string ...$values) : int
+    public function getReturn() : SReturn
     {
-        return array_push($this->skip_statement, ...$values);
+        return $this->return;
     }
 
-    final public function getStatementSkipValues(string ...$values) : array
+    public function pushStatementSkipValues(string ...$values) : self
+    {
+        array_push($this->skip_statement, ...$values);
+        return $this;
+    }
+
+    public function getStatementSkipValues(string ...$values) : array
     {
         return $this->skip_statement;
     }
 
-    final public function setPointer(string $name, $value = null, Statement $statement = null) : string
+    public function setPointer(string $name, $value = null, Statement $statement = null) : string
     {
         if (null === $value) while (true) if (false === in_array($randm = $this->getRandomString(), $this->pointers)) return $this->pointers[$name] = $randm;
         if (null === $statement) return $this->pointers[$name] = $value;
@@ -53,9 +62,14 @@ abstract class Base implements BaseInterface
         return $this->pointers[$name] = $bound;
     }
 
-    final public function getPointer(string $name) : string
+    public function getPointer(string $name) : string
     {
         return array_key_exists($name, $this->pointers) ? $this->pointers[$name] : $this->setPointer($name);
+    }
+
+    protected function setReturn(SReturn $return) : void
+    {
+        $this->return = $return;
     }
 
     final protected function setCore(Initiator $core) : void

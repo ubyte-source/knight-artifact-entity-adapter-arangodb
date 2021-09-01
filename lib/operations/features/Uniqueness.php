@@ -2,7 +2,7 @@
 
 namespace ArangoDB\operations\features;
 
-use ArangoDB\operations\common\Document;
+use ArangoDB\operations\common\base\Document;
 
 trait Uniqueness
 {

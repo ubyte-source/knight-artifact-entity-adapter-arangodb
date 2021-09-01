@@ -27,7 +27,7 @@ final class Container
         });
     }
 
-    public function pushEdges(Vertex $vertex, Edge ...$edges) : int
+    public function pushEdges(Vertex $vertex, Edge ...$edges) : self
     {
         $namespace = $vertex->getReflection()->getNamespaceName();
         $namespace = $namespace . '\\' . 'edges';
@@ -38,7 +38,9 @@ final class Container
             $edge->setFrom($vertex);
         });
 
-        return array_push($this->edges, ...$edges);
+        array_push($this->edges, ...$edges);
+
+        return $this;
     }
 
     public function removeEdgesByName(string ...$names) : self

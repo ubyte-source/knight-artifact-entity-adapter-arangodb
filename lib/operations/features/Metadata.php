@@ -3,7 +3,7 @@
 namespace ArangoDB\operations\features;
 
 use ArangoDB\Statement;
-use ArangoDB\operations\common\Document;
+use ArangoDB\operations\common\base\Document;
 
 trait Metadata
 {

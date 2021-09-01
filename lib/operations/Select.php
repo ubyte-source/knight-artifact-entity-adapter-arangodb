@@ -4,7 +4,7 @@ namespace ArangoDB\operations;
 
 use ArangoDB\Parser;
 use ArangoDB\Statement;
-use ArangoDB\operations\common\Document;
+use ArangoDB\operations\common\base\Document;
 use ArangoDB\operations\common\Choose;
 use ArangoDB\operations\features\Prune;
 use ArangoDB\entity\Vertex;

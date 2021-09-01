@@ -105,7 +105,7 @@ class Transaction
         return $this->exception_message_default;
     }
 
-    public function commit() : array
+    public function commit() :? array
     {
         $statements = $this->getStatements();
         if (0 === count($statements)) throw new CustomException('developer/statements');
@@ -132,7 +132,7 @@ class Transaction
             $arango_query_language = addslashes($arango_query_language);
 
             $variable_statement = 'statement_' . $i;
-            $javascript .= 'var' . chr(32) . $variable_statement . chr(32) . '= db._createStatement({';
+            $javascript .= 'let' . chr(32) . $variable_statement . chr(32) . '= db._createStatement({';
             $javascript .= 'query:"' . $arango_query_language . '",';
             if (!!$bind = $statement->getBind()) {
                 $json = Output::json($bind, JSON_UNESCAPED_SLASHES);
@@ -141,7 +141,7 @@ class Transaction
             }
             $javascript .= '});';
             $variable_response = $variable_statement . '_response';
-            $javascript .= 'var' . chr(32) . $variable_response . chr(32) . '=' . chr(32);
+            $javascript .= 'let' . chr(32) . $variable_response . chr(32) . '=' . chr(32);
             $javascript .= $variable_statement;
             $javascript .= chr(46) . 'execute()';
             $javascript .= chr(46) . 'toArray();';
@@ -192,11 +192,12 @@ class Transaction
             $this->start();
 
             $exception_message = $exception->getMessage();
-            if (false === in_array(md5($exception_message), $exceptions_message_accepted)) return array();
+            if (false === in_array(md5($exception_message), $exceptions_message_accepted)) return null;
 
             Output::concatenate('notice', $exception_message);
             Output::print(false);
         }
+
         return $execute;
     }
 

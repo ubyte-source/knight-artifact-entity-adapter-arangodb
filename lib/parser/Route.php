@@ -2,7 +2,7 @@
 
 namespace ArangoDB\parser;
 
-use ArangoDB\operations\common\Document;
+use ArangoDB\operations\common\base\Document;
 
 class Route
 {

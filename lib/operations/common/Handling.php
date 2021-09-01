@@ -2,6 +2,8 @@
 
 namespace ArangoDB\operations\common;
 
+use Closure;
+
 use Knight\armor\CustomException;
 
 use Entity\Map as Entity;
@@ -12,7 +14,7 @@ use ArangoDB\Transaction;
 use ArangoDB\entity\Edge;
 use ArangoDB\entity\common\Arango;
 use ArangoDB\operations\common\Base;
-use ArangoDB\operations\common\Document;
+use ArangoDB\operations\common\base\Document;
 use ArangoDB\operations\common\handling\Modifier;
 use ArangoDB\operations\features\Match;
 
@@ -20,10 +22,15 @@ abstract class Handling extends Base
 {
     use Modifier, Match;
 
+    const RNEW = 'NEW';
+    const ROLD = 'OLD';
+    const RESPONSE = '{type: "%s", collection: "%s", document: %s}';
+
     protected $edge = false;                          // (bool) Action only edge
     protected $null = true;                           // (bool) Accept empty document
     protected $loop = true;                           // (bool) Prevent edge direct loop
     protected $skip_entity = [];                      // (array) Entity
+    protected $enable_entity_return = [];             // (array) Entity
     protected $transactions_preliminary = [];         // (array) Transaction
     protected $transactions_final = [];               // (array) Transaction
 
@@ -60,9 +67,10 @@ abstract class Handling extends Base
         return $this->loop;
     }
 
-    public function pushEntitySkips(Entity ...$entities) : int
+    public function pushEntitySkips(Entity ...$entities) : self
     {
-        return array_push($this->skip_entity, ...$entities);
+        array_push($this->skip_entity, ...$entities);
+        return $this;
     }
 
     public function getEntitySkips() : array
@@ -70,19 +78,32 @@ abstract class Handling extends Base
         return $this->skip_entity;
     }
 
-    public function run() : array
+    public function setEntityEnableReturns(Entity ...$entities) : self
+    {
+        $this->enable_entity_return = $entities;
+        return $this;
+    }
+
+    public function getEntityEnableReturns() : array
+    {
+        return $this->enable_entity_return;
+    }
+
+    public function run() :? array
     {
         return $this->getTransaction()->commit();
     }
 
-    public function pushTransactionsPreliminary(Transaction ...$transactions) : int
+    public function pushTransactionsPreliminary(Transaction ...$transactions) : self
     {
-        return array_push($this->transactions_preliminary, ...$transactions);
+        array_push($this->transactions_preliminary, ...$transactions);
+        return $this;
     }
 
-    public function pushTransactionsFinal(Transaction ...$transactions) : int
+    public function pushTransactionsFinal(Transaction ...$transactions) : self
     {
-        return array_push($this->transactions_final, ...$transactions);
+        array_push($this->transactions_final, ...$transactions);
+        return $this;
     }
 
     protected function mergeParentTransaction(Transaction $main, string $action, Transaction ...$transactions) : void
@@ -105,6 +126,8 @@ abstract class Handling extends Base
         if ($preliminary = $this->getStatementsPreliminary()) $transaction->pushStatementsPreliminary(...$preliminary);
         if ($preliminary = $this->getTransactionsPreliminary()) $this->mergeParentTransaction($transaction, 'pushStatementsPreliminary', ...$preliminary);
 
+        $enable_entities_return = $this->getEntityEnableReturns();
+
         $skips_entities = $this->getEntitySkips();
         $start_vertices = $this->getCore()->getStart();
         foreach ($start_vertices as $vertex) {
@@ -112,7 +135,7 @@ abstract class Handling extends Base
             $parser_data_routes = $parser->getRoutes();
             foreach ($parser_data_routes as $route) {
                 $route_documents = $route->getDocuments();
-                array_walk($route_documents, function (Document $document) use (&$skips_entities, $transaction) {
+                array_walk($route_documents, function (Document $document) use (&$skips_entities, $enable_entities_return, $transaction) {
                     if ($this->getActionOnlyEdges()
                         && $document->getEntity()->getType() !== Edge::TYPE) return;
 
@@ -122,10 +145,16 @@ abstract class Handling extends Base
                     if (false === empty($document_entity_skip)) return;
                     array_push($skips_entities, $document->getEntity());
 
+                    $document_entity_return = array_filter($enable_entities_return, function (Entity $entity) use ($document) {
+                        return $document->getEntity()->getHash() === $entity->getHash();
+                    });
+
+                    $statement = new Statement();
+                    $statement->setHideResponse(empty($document_entity_return));
+                    if (!!$skip_values = $this->getStatementSkipValues()) $statement->pushSkipValues(...$skip_values);
+
                     $document_values = $document->getValues();
                     $document_values_keys = array_keys($document_values);
-                    $statement = new Statement();
-                    if (!!$skip_values = $this->getStatementSkipValues()) $statement->pushSkipValues(...$skip_values);
 
                     $iterate = array_diff(Edge::DISTINCTIVE, $document_values_keys);
                     if (method_exists($this, 'before')) $this->before($statement, $document);
@@ -227,5 +256,16 @@ abstract class Handling extends Base
     protected function getTransactionsFinal() : array
     {
         return $this->transactions_final;
+    }
+
+    protected function shouldReturn(Statement $statement, Closure $closure) : void
+    {
+        $return = $this->getReturn()->getStatement();
+        if (0 === strlen($return->getQuery())) {
+            $closure->call($this, $statement);
+        } else {
+            $query = $statement->addFromStatement($return);
+            $statement->append($query);
+        }
     }
 }

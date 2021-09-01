@@ -7,13 +7,15 @@ use Knight\armor\CustomException;
 use ArangoDB\Statement;
 use ArangoDB\Transaction;
 use ArangoDB\operations\common\Handling;
-use ArangoDB\operations\common\Document;
+use ArangoDB\operations\common\base\Document;
 use ArangoDB\operations\features\Metadata;
 use ArangoDB\operations\features\Uniqueness;
 
 class Upsert extends Handling
 {
     use Metadata, Uniqueness;
+
+    const RESPONSE = '{type: "%s", collection: "%s", document: %s, replaced: %s ? %s : null}';
 
     protected $remover = []; // (array)
     protected $replace;      // (bool)
@@ -87,7 +89,12 @@ class Upsert extends Handling
         $statement->append('IN');
         $statement->append($collection_name);
         $statement->append('OPTIONS {exclusive: true, waitForSync: true}');
-        $statement->append('RETURN {type: "' . $collection_type . '", collection: "' . $collection_name . '", document: NEW, replaced: OLD ? OLD : null}', false);
+
+        $this->shouldReturn($statement, function (Statement $statement) use ($collection_type, $collection_name) {
+            $statement->append('RETURN');
+            $statement_return = sprintf(static::RESPONSE, $collection_type, $collection_name, Handling::RNEW, Handling::ROLD, Handling::ROLD);
+            $statement->append($statement_return, false);
+        });
 
         $transaction->pushStatements($statement);
     }

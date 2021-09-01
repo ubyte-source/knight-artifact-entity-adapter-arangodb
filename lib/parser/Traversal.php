@@ -23,9 +23,10 @@ class Traversal
         });
     }
 
-    public function pushEdges(Edge ...$edges) : int
+    public function pushEdges(Edge ...$edges) : self
     {
-        return array_push($this->edges, ...$edges);
+        array_push($this->edges, ...$edges);
+        return $this;
     }
 
     public function getEdges() : array
