@@ -48,6 +48,12 @@ abstract class Edge extends Arango
         parent::before();
     }
 
+    public static function getName() : string
+    {
+        $static = new static();
+        return $static->getReflection()->getShortName();
+    }
+
     public function getDirection() : string
     {
         return static::DIRECTION;

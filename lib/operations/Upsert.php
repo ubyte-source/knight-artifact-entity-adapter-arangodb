@@ -67,7 +67,7 @@ class Upsert extends Handling
 
         $created = $this->getDocumentMetadataRegex();
         $created = str_replace('$0', 'created', $created);
-        $document_created = 'OLD' . chr(46) . $created;
+        $document_created = Handling::ROLD . chr(46) . $created;
         $statement->pushSkipValues($document_created);
 
         $document_metadata = $this->addDocumentMetadata($statement, $document, 'created', 'updated');

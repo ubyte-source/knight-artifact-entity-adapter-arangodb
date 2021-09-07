@@ -15,7 +15,7 @@ use ArangoDB\operations\features\Match;
 
 class Update extends Handling
 {
-    use Match, Metadata, Uniqueness;
+    use Metadata, Uniqueness;
 
     const SEARCH = 'search';
     const RESPONSE = '{type: "%s", collection: "%s", document: %s, replaced: %s}';

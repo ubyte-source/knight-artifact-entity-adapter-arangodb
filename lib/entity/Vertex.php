@@ -10,9 +10,11 @@ use ArangoDB\entity\common\Arango;
 abstract class Vertex extends Arango
 {
     const TYPE = 'vertex';
+    const AUTHOR = 'author';
+    const OWNER = 'owner';
     const MANAGEMENT = [
-        'author',
-        'owner'
+        Vertex::AUTHOR,
+        Vertex::OWNER
     ];
 
     protected function before() : void

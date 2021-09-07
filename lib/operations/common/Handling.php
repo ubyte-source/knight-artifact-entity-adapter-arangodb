@@ -106,18 +106,6 @@ abstract class Handling extends Base
         return $this;
     }
 
-    protected function mergeParentTransaction(Transaction $main, string $action, Transaction ...$transactions) : void
-    {
-        if (!method_exists($this, $action)) throw new CustomException('developer/method/' . $action);
-        array_walk($transactions, function (Transaction $transaction) use ($main, $action) {
-            if (!!$transaction_statements_preliminary = $transaction->getStatementsPreliminary()) $main->$action(...$transaction_statements_preliminary);
-            if (!!$transaction_statements = $transaction->getStatements()) $main->$action(...$transaction_statements);
-            if (!!$transaction_statements_final = $transaction->getStatementsFinal()) $main->$action(...$transaction_statements_final);
-            $main->openCollectionsWriteMode(...$transaction->getLockWrite());
-            $main->openCollectionsReadMode(...$transaction->getLockRead()); 
-        });
-    }
-
     public function getTransaction() : Transaction
     {
         $transaction = new Transaction();
@@ -231,6 +219,18 @@ abstract class Handling extends Base
         if ($final = $this->getStatementsFinal()) $transaction->pushStatementsFinal(...$final);
 
         return $transaction;
+    }
+
+    protected function mergeParentTransaction(Transaction $main, string $action, Transaction ...$transactions) : void
+    {
+        if (!method_exists($this, $action)) throw new CustomException('developer/method/' . $action);
+        array_walk($transactions, function (Transaction $transaction) use ($main, $action) {
+            if (!!$transaction_statements_preliminary = $transaction->getStatementsPreliminary()) $main->$action(...$transaction_statements_preliminary);
+            if (!!$transaction_statements = $transaction->getStatements()) $main->$action(...$transaction_statements);
+            if (!!$transaction_statements_final = $transaction->getStatementsFinal()) $main->$action(...$transaction_statements_final);
+            $main->openCollectionsWriteMode(...$transaction->getLockWrite());
+            $main->openCollectionsReadMode(...$transaction->getLockRead()); 
+        });
     }
 
     protected function setEntitySkips(Entity ...$skip_entity) : void

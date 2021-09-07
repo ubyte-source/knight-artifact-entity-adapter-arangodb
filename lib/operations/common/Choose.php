@@ -248,7 +248,7 @@ abstract class Choose extends Base
         $pointer = $this->getPointer($pointer);
 
         $conditions = [];
-        $collection = 'NOT_NULL(' . $pointer . ') AND IS_SAME_COLLECTION("' . $entity->getCollectionName() . '",' . chr(32) . $pointer . ')';
+        $collection = 'NOT_NULL' . chr(40) . $pointer . chr(41) . chr(32) . 'AND IS_SAME_COLLECTION' . chr(40) . chr(34) . $entity->getCollectionName() . chr(34) . chr(44) . chr(32) . $pointer . chr(41);
         array_push($conditions, $collection);
 
         if ($matches = $this->matches($pointer, $statement, new Document($entity))) {
