@@ -27,7 +27,7 @@ abstract class Arango extends Entity
         $id = $this->addField(Arango::ID);
         $id_pattern = Validation::factory('ShowString');
         $id->setPatterns($id_pattern);
-        $id->addUniqueness();
+        $id->addUniqueness('secondary');
         $id->setProtected();
         $id->setRequired();
 
@@ -35,7 +35,7 @@ abstract class Arango extends Entity
         $key_pattern = Validation::factory('Regex');
         $key_pattern->setRegex('/^\w+$/');
         $key->setPatterns($key_pattern);
-        $key->addUniqueness();
+        $key->addUniqueness(Field::PRIMARY);
         $key->setProtected();
         $key->setRequired();
         $key->setTrigger(function () {
