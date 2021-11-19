@@ -152,7 +152,9 @@ class Transaction
 
                 $exception_message = $statement->getExceptionMessage();
                 if (null === $exception_message) $exception_message = $this->getExceptionMessageDefault();
-                array_push($exceptions_message_accepted, md5($exception_message));
+
+                $exception_message_hash = md5($exception_message);
+                array_push($exceptions_message_accepted, $exception_message_hash);
                 $exception_message = addslashes($exception_message);
 
                 $javascript .= 'if (' . $expect_condition . chr(32) . $variable_response . chr(46) . 'length) throw "' . $exception_message . '";';
@@ -192,7 +194,8 @@ class Transaction
             $this->start();
 
             $exception_message = $exception->getMessage();
-            if (false === in_array(md5($exception_message), $exceptions_message_accepted)) return null;
+            $exception_message_hash = md5($exception_message);
+            if (false === in_array($exception_message_hash, $exceptions_message_accepted)) return null;
 
             Output::concatenate('notice', $exception_message);
             Output::print(false);

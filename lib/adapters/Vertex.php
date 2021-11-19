@@ -10,6 +10,7 @@ use Entity\Adapter;
 use ArangoDB\entity\Edge;
 use ArangoDB\entity\Vertex as ADBVertex;
 use ArangoDB\adapters\map\Container;
+use ArangoDB\adapters\Edge as CEdge;
 
 class Vertex extends Adapter
 {
@@ -52,9 +53,8 @@ class Vertex extends Adapter
 
         $last = array_pop($edges);
         if (null !== $last) {
-            $last_vertex = $last->vertex();
+            static::setEdgeVertex($node, $last);
             $node->cloneAllFieldsFromEntity($last);
-            $node->vertex($last_vertex);
             $direction = $last->getForceDirection();
             if (null !== $direction) $node->setForceDirection($direction);
         }
@@ -62,13 +62,11 @@ class Vertex extends Adapter
         array_walk($edges, function (Edge $edge) use ($vertex, $node_vertex, $node_namespace) {
             $instance = $this->factory($vertex, $node_namespace);
             $instance->cloneAllFieldsFromEntity($edge);
-            $instance_vertex = $edge->vertex();
-            $instance_vertex = $instance->vertex($instance_vertex);
+            $instance_direction = $edge->getForceDirection();
+            if (null !== $instance_direction) $instance->setForceDirection($instance_direction);
 
-            $direction = $edge->getForceDirection();
-            if (null !== $direction) $instance->setForceDirection($direction);
-            if ($instance_vertex->getReflection()->getName() === $node_vertex->getReflection()->getName())
-                $instance_vertex->setContainer(null, $node_vertex->getContainer());
+            static::setEdgeVertex($instance, $edge);
+            static::overrideContainer($node_vertex, $edge);
         });
 
         return $node;
@@ -102,6 +100,20 @@ class Vertex extends Adapter
             array_push($result_collections, $collection);
         }
         return $result_collections;
+    }
+
+    protected static function setEdgeVertex(Edge $entity, Edge $apply) : void
+    {
+        if ($apply->getAdapter() instanceof CEdge) $entity->vertex($apply->vertex());
+    }
+
+    protected static function overrideContainer(Vertex $master, Edge $imported) : void
+    {
+        if ($imported->getAdapter() instanceof CEdge) {
+            $imported_vertex = $imported->vertex();
+            if ($imported_vertex->getReflection()->getName() === $master->getReflection()->getName())
+                $imported_vertex->setContainer(null, $master->getContainer());
+        }
     }
 
     protected function factory(ADBVertex $vertex, string $parameter) : Edge

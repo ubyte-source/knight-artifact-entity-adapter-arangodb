@@ -19,6 +19,7 @@ final class Container
         $variables = array_keys($variables);
         $variables_glue = [];
         foreach ($variables as $name) array_push($variables_glue, array(&$this->$name));
+
         array_walk_recursive($variables_glue, function (&$item, $name) {
             if (false === is_object($item)) return;
             $clone = clone $item;
@@ -46,8 +47,7 @@ final class Container
     public function removeEdgesByName(string ...$names) : self
     {
         $this->edges = array_filter($this->edges, function (Edge $edge) use ($names) {
-            $reflection_shortname = $edge->getReflection()->getShortName();
-            return false === in_array($reflection_shortname, $names);
+            return false === in_array($edge->getReflection()->getShortName(), $names);
         });
         return $this;
     }
@@ -56,8 +56,7 @@ final class Container
     {
         $edges = $this->getEdges();
         $edges = array_filter($edges, function (Edge $edge) use ($names) {
-            $reflection_shortname = $edge->getReflection()->getShortName();
-            return in_array($reflection_shortname, $names);
+            return in_array($edge->getReflection()->getShortName(), $names);
         });
         return $edges;
     }

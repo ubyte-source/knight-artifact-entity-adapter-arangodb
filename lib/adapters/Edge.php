@@ -9,8 +9,8 @@ use ArangoDB\Initiator;
 
 use ArangoDB\entity\Vertex;
 use ArangoDB\entity\Edge as ADBEdge;
-
 use ArangoDB\entity\common\Arango;
+use ArangoDB\adapters\Vertex as CVertex;
 
 class Edge extends Adapter
 {
@@ -56,8 +56,8 @@ class Edge extends Adapter
 
         $to->cloneAllFieldsFromEntity($vertex);
         if (true !== $interconnect) return $to;
-        $container = $vertex->getContainer();
-        $to->setContainer($container);
+        if ($vertex->getAdapter() instanceof CVertex)
+            $to->setContainer($vertex->getContainer());
         return $to;
     }
 
