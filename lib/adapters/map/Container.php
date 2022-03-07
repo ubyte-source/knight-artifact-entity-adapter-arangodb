@@ -9,10 +9,18 @@ use ArangoDB\entity\Edge;
 use ArangoDB\entity\Vertex;
 use ArangoDB\entity\common\Arango;
 
+/* The Container class is used to store edges */
+
 final class Container
 {
     protected $edges = []; // (array) Edge
 
+    /**
+     * Clone the object and all of its properties
+     * 
+     * @return The cloned object.
+     */
+    
     public function __clone()
     {
         $variables = get_object_vars($this);
@@ -28,6 +36,19 @@ final class Container
         });
     }
 
+    /**
+     * * The function accepts a vertex and an arbitrary number of edges. 
+     * * It then checks to make sure the namespace of the vertex and the edge are the same. 
+     * * It then attaches the adapter to the edge and sets the vertex as the from vertex. 
+     * * Finally, it pushes the edge onto the edges array. 
+     * 
+     * Now, let's take a look at the code for the `pushVertices` function.
+     * 
+     * @param Vertex vertex The vertex to attach the edges to.
+     * 
+     * @return The container itself.
+     */
+    
     public function pushEdges(Vertex $vertex, Edge ...$edges) : self
     {
         $namespace = $vertex->getReflection()->getNamespaceName();
@@ -44,6 +65,12 @@ final class Container
         return $this;
     }
 
+    /**
+     * Remove all edges whose reflection's short name is in the given array of names
+     * 
+     * @return The object itself.
+     */
+    
     public function removeEdgesByName(string ...$names) : self
     {
         $this->edges = array_filter($this->edges, function (Edge $edge) use ($names) {
@@ -52,6 +79,12 @@ final class Container
         return $this;
     }
 
+    /**
+     * Get all the edges that have a reflection with a short name that is in the given list of names
+     * 
+     * @return An array of edges.
+     */
+    
     public function getEdgesByName(string ...$names) : array
     {
         $edges = $this->getEdges();
@@ -61,6 +94,12 @@ final class Container
         return $edges;
     }
 
+    /**
+     * Return an array of all the edges in the graph
+     * 
+     * @return An array of Edge objects.
+     */
+    
     public function getEdges() : array
     {
         return $this->edges;

@@ -7,10 +7,23 @@ use Entity\Map as Entity;
 use ArangoDB\Statement;
 use ArangoDB\operations\common\base\Document;
 
+/* The `trait` keyword is used to create a trait. A trait is a collection of methods that can be used
+as if they were part of the class in which they are declared. */
+
 trait Match
 {
     protected $or = []; // (array) Entity
 
+    /**
+     * It matches the documents to the statement.
+     * 
+     * @param string name The name of the field to match.
+     * @param Statement statement The statement to bind the documents to.
+     * 
+     * @return The `matches()` method returns an array of conditions that will be used to build the
+     * query.
+     */
+    
     protected function matches(string $name, Statement $statement, Document ...$documents) : array
     {
         $response = [];
@@ -65,12 +78,24 @@ trait Match
         return array_filter($response);
     }
 
+    /**
+     * *This function adds one or more entities to the or array.*
+     * 
+     * @return The object itself.
+     */
+    
     public function pushEntitiesUsingOr(Entity ...$or) : self
     {
         array_push($this->or, ...$or);
         return $this;
     }
 
+    /**
+     * This function returns an array of entities that are used in the or clause
+     * 
+     * @return An array of entities that are being used in the query.
+     */
+    
     protected function getEntitiesUsingOr() : array
     {
         return $this->or;

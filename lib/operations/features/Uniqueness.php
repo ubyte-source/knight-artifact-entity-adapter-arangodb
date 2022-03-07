@@ -4,8 +4,18 @@ namespace ArangoDB\operations\features;
 
 use ArangoDB\operations\common\base\Document;
 
+/* The `getUniquenessMatch` method is a helper method that is used to find a document that has the same
+values as the document passed in as a parameter. */
+
 trait Uniqueness
 {
+    /**
+     * If the document has a unique constraint, then we can use it to find a document that already
+     * exists in the database
+     * 
+     * @param Document document The document to check for uniqueness.
+     */
+    
     protected static function getUniquenessMatch(Document $document) :? Document
     {
         $clone = clone $document;

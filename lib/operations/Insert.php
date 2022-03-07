@@ -8,9 +8,21 @@ use ArangoDB\operations\common\Handling;
 use ArangoDB\operations\common\base\Document;
 use ArangoDB\operations\features\Metadata;
 
+/* Inserts a document into a collection */
+
 class Insert extends Handling
 {
     use Metadata;
+
+    /**
+     * * The action function is called when a document is created.
+     * * It sets the document metadata and inserts the document into the collection.
+     * * It returns the document metadata
+     * 
+     * @param Transaction transaction The transaction object.
+     * @param Statement statement The statement to be executed.
+     * @param Document document The document that is being inserted.
+     */
 
     protected function action(Transaction $transaction, Statement $statement, Document $document) : void
     {

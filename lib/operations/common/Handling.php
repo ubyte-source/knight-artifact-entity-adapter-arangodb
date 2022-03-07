@@ -18,6 +18,8 @@ use ArangoDB\operations\common\base\Document;
 use ArangoDB\operations\common\handling\Modifier;
 use ArangoDB\operations\features\Match;
 
+/* The Handling class is a base class for handling the data */
+
 abstract class Handling extends Base
 {
     use Modifier, Match;
@@ -34,78 +36,181 @@ abstract class Handling extends Base
     protected $transactions_preliminary = [];         // (array) Transaction
     protected $transactions_final = [];               // (array) Transaction
 
+    /**
+     * * Set the action to only use edges
+     * 
+     * @param bool value The value to set the parameter to.
+     * 
+     * @return The object itself.
+     */
+    
     public function setActionOnlyEdges(bool $value = true) : self
     {
         $this->edge = $value;
         return $this;
     }
 
+    /**
+     * Returns a boolean value indicating whether or not the action is an edge action
+     * 
+     * @return The getActionOnlyEdges() method returns a boolean value.
+     */
+    
     public function getActionOnlyEdges() : bool
     {
         return $this->edge;
     }
 
+    /**
+     * If the document is empty, prevent the action from running
+     * 
+     * @param bool value The value to set the parameter to.
+     * 
+     * @return The object itself.
+     */
+    
     public function setActionPreventEmptyDocument(bool $value = true) : self
     {
         $this->null = $value;
         return $this;
     }
 
+    /**
+     * It returns a boolean value.
+     * 
+     * @return The value of the null property.
+     */
+    
     public function getActionPreventEmptyDocument() : bool
     {
         return $this->null;
     }
 
+    /**
+     * Set the value of the `loop` property
+     * 
+     * @param bool value The value to set the property to.
+     * 
+     * @return The object itself.
+     */
+    
     public function setActionPreventLoop(bool $value = true) : self
     {
         $this->loop = $value;
         return $this;
     }
 
+    /**
+     * Returns a boolean value indicating whether the current action is a loop
+     * 
+     * @return The value of the loop property.
+     */
+    
     public function getActionPreventLoop() : bool
     {
         return $this->loop;
     }
 
+    /**
+     * *This function adds one or more entities to the list of entities to skip when the `skipEntity`
+     * function is called.*
+     * 
+     * @return The object itself.
+     */
+    
     public function pushEntitySkips(Entity ...$entities) : self
     {
         array_push($this->skip_entity, ...$entities);
         return $this;
     }
 
+    /**
+     * Returns an array of entity names that should be skipped when processing the data
+     * 
+     * @return An array of strings.
+     */
+    
     public function getEntitySkips() : array
     {
         return $this->skip_entity;
     }
 
+    /**
+     * This function sets the entities that will be returned by the `getEntity` method
+     * 
+     * @return The setEntityEnableReturns method returns the current instance of the class.
+     */
+    
     public function setEntityEnableReturns(Entity ...$entities) : self
     {
         $this->enable_entity_return = $entities;
         return $this;
     }
 
+    /**
+     * The `getEntityEnableReturns()` function returns an array of the entity types that are enabled
+     * for return
+     * 
+     * @return The enable_entity_return property is an array of the entity names that are enabled.
+     */
+    
     public function getEntityEnableReturns() : array
     {
         return $this->enable_entity_return;
     }
 
+    /**
+     * This function commits the transaction
+     * 
+     * @return The commit.
+     */
+    
     public function run() :? array
     {
         return $this->getTransaction()->commit();
     }
 
+    /**
+     * *This function adds a transaction to the list of transactions that will be pushed to the
+     * database.*
+     * 
+     * The function takes in a variable number of arguments, which are all of the type `Transaction`. 
+     * 
+     * @return The object itself.
+     */
+    
     public function pushTransactionsPreliminary(Transaction ...$transactions) : self
     {
         array_push($this->transactions_preliminary, ...$transactions);
         return $this;
     }
 
+    /**
+     * *This function adds a Transaction object to the end of the array of Transaction objects.*
+     * 
+     * The function is a bit more complicated than the previous ones, but it's still pretty simple. 
+     * 
+     * The function takes in an arbitrary number of Transaction objects, and adds them to the end of
+     * the array of Transaction objects. 
+     * 
+     * The function returns the current instance of the class, so that it can be chained with other
+     * methods.
+     * 
+     * @return The object itself.
+     */
+    
     public function pushTransactionsFinal(Transaction ...$transactions) : self
     {
         array_push($this->transactions_final, ...$transactions);
         return $this;
     }
 
+    /**
+     * This function is responsible for executing the actions of the script
+     * 
+     * @return The return value is a Transaction object.
+     */
+    
     public function getTransaction() : Transaction
     {
         $transaction = new Transaction();
@@ -221,6 +326,13 @@ abstract class Handling extends Base
         return $transaction;
     }
 
+    /**
+     * Merge the statements of a parent transaction with the statements of a child transaction
+     * 
+     * @param Transaction main The main transaction.
+     * @param string action The method name to call on the main transaction.
+     */
+    
     protected function mergeParentTransaction(Transaction $main, string $action, Transaction ...$transactions) : void
     {
         if (!method_exists($this, $action)) throw new CustomException('developer/method/' . $action);
@@ -233,31 +345,68 @@ abstract class Handling extends Base
         });
     }
 
+    /**
+     * *This function is used to set the entities that should be skipped when the `skip_entity`
+     * function is called.*
+     */
+    
     protected function setEntitySkips(Entity ...$skip_entity) : void
     {
         $this->skip_entity = $skip_entity;
     }
 
+    /**
+     * The setTransactionsPreliminary function is used to set the transactions_preliminary property
+     */
+    
     protected function setTransactionsPreliminary(Transaction ...$transactions_preliminary) : void
     {
         $this->transactions_preliminary = $transactions_preliminary;
     }
 
+    /**
+     * This function returns the transactions_preliminary array
+     * 
+     * @return An array of transactions.
+     */
+    
     protected function getTransactionsPreliminary() : array
     {
         return $this->transactions_preliminary;
     }
 
+    /**
+     * *This function sets the transactions_final property of the class to the transactions_final
+     * parameter.*
+     * 
+     * The next step is to create a function that will set the transactions_pending property of the
+     * class
+     */
+    
     protected function setTransactionsFinal(Transaction ...$transactions_final) : void
     {
         $this->transactions_final = $transactions_final;
     }
 
+    /**
+     * This function returns the final array of transactions
+     * 
+     * @return The method returns an array of transactions.
+     */
+    
     protected function getTransactionsFinal() : array
     {
         return $this->transactions_final;
     }
 
+    /**
+     * If the return statement is empty, then the closure is called. Otherwise, the return statement is
+     * added to the statement and the statement is appended to the query
+     * 
+     * @param Statement statement The statement that will be returned.
+     * @param Closure closure A closure that will be called if the return value is empty.
+     */
+    
     protected function shouldReturn(Statement $statement, Closure $closure) : void
     {
         $return = $this->getReturn()->getStatement();

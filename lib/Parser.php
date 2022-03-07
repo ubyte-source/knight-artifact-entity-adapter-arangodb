@@ -5,6 +5,7 @@ namespace ArangoDB;
 use stdCalss;
 
 use Knight\armor\CustomException;
+/* This class is used to traverse the graph */
 
 use ArangoDB\entity\common\Arango;
 use ArangoDB\entity\Edge;
@@ -12,6 +13,8 @@ use ArangoDB\entity\Vertex;
 use ArangoDB\parser\Route;
 use ArangoDB\parser\Traversal;
 use ArangoDB\operations\common\base\Document;
+
+/* The Parser class is a class that is used to parse the routes of the graph */
 
 class Parser
 {
@@ -21,6 +24,12 @@ class Parser
     protected $edges_targets = [];    // (array)
     protected $with_collections = []; // (array)
 
+    /**
+     * Clone the object and all of its properties
+     * 
+     * @return The object is being returned.
+     */
+    
     public function __clone()
     {
         $variables = get_object_vars($this);
@@ -38,6 +47,13 @@ class Parser
         });
     }
 
+    /**
+     * * The constructor takes a list of vertices and creates a route object.
+     * * The route object is created by traversing the edges of the first vertex.
+     * * The traversal is done by creating a list of edges and traversing them. 
+     * @return The `Route` object.
+     */
+    
     public function __construct(Vertex ...$vertices)
     {
         $vertex = reset($vertices);
@@ -104,11 +120,23 @@ class Parser
         }
     }
 
+    /**
+     * Returns an array of the target edges
+     * 
+     * @return An array of edges.
+     */
+    
     public function getTargetsEdge() : array
     {
         return $this->edges_targets;
     }
 
+    /**
+     * Get all the targets of the edges in the graph
+     * 
+     * @return An array of Vertex objects.
+     */
+    
     public function getTargetsVertex() : array
     {
         $response = $this->getTargetsEdge();
@@ -118,6 +146,12 @@ class Parser
         return $response;
     }
 
+    /**
+     * Get the names of all the vertices that are targets of the edges in the graph
+     * 
+     * @return The names of the vertices that are targets of the edges in the graph.
+     */
+    
     public function getTargetsVertexName() : array
     {
         $response = $this->getTargetsVertex();
@@ -129,11 +163,23 @@ class Parser
         return $response;
     }
 
+    /**
+     * Return an array of all the edges in the graph
+     * 
+     * @return An array of Edge objects.
+     */
+    
     public function getEdges() : array
     {
         return $this->edges;
     }
 
+    /**
+     * Returns an array of the names of all the edges in the graph
+     * 
+     * @return An array of strings.
+     */
+    
     public function getEdgesName() : array
     {
         $response = $this->getEdges();
@@ -145,6 +191,12 @@ class Parser
         return $response;
     }
 
+    /**
+     * Get the name of the edges with the direction
+     * 
+     * @return An array of edge names with directions.
+     */
+    
     public function getEdgesNameWithDirection() : array
     {
         $edges = $this->getEdges();
@@ -162,11 +214,24 @@ class Parser
         return array_values($response);
     }
 
+    /**
+     * Returns an array of all the routes that have been added to the router
+     * 
+     * @return An array of Route objects.
+     */
+    
     public function getRoutes() : array
     {
         return $this->routes;
     }
 
+    /**
+     * Get the collection names of the vertex and all the collections that are connected to it
+     * 
+     * @return The collection names of the start vertex, the end vertices of each edge, and the start
+     * vertex of each edge.
+     */
+    
     public function getWithCollections() : array
     {
         $response = [];
@@ -181,31 +246,63 @@ class Parser
         return $response;
     }
 
+    /**
+     * Return the start vertex
+     * 
+     * @return The start vertex.
+     */
+    
     protected function getStart() : Vertex
     {
         return $this->start;
     }
 
+    /**
+     * Set the start vertex
+     * 
+     * @param Vertex start The starting vertex.
+     */
+    
     protected function setStart(Vertex $start) : void
     {
         $this->start = $start;
     }
 
+    /**
+     * *This function pushes routes into the routes array.*
+     */
+    
     protected function pushRoutes(Route ...$routes) : void
     {
         array_push($this->routes, ...$routes);
     }
 
+    /**
+     * *This function pushes an array of edges to the edges array.*
+     * 
+     * The next function is a bit more complex. It's called `getEdges` and it returns an array of edges
+     */
+    
     protected function pushEdges(Edge ...$edges) : void
     {
         array_push($this->edges, ...$edges);
     }
 
+    /**
+     * *This function pushes the given edges to the edges_targets array.*
+     */
+    
     protected function pushEdgesTargets(Edge ...$edges_targets) : void
     {
         array_push($this->edges_targets, ...$edges_targets);
     }
 
+    /**
+     * Given a set of edges, return a set of traversals
+     * 
+     * @return An array of Traversals.
+     */
+    
     private function traversals(Edge ...$edges) : array
     {
         $response = [];

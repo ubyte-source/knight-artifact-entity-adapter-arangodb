@@ -11,6 +11,8 @@ use ArangoDB\operations\common\base\Document;
 use ArangoDB\operations\features\Metadata;
 use ArangoDB\operations\features\Uniqueness;
 
+/* This class is used to upsert documents into a collection */
+
 class Upsert extends Handling
 {
     use Metadata, Uniqueness;
@@ -20,17 +22,39 @@ class Upsert extends Handling
     protected $remover = []; // (array)
     protected $replace;      // (bool)
 
+    /**
+     * * Set the replace parameter to true or false
+     * 
+     * @param bool replace If true, the existing table will be dropped and recreated.
+     * 
+     * @return The object itself.
+     */
+    
     public function setReplace(bool $replace) : self
     {
         $this->replace = $replace;
         return $this;
     }
 
+    /**
+     * Returns the value of the replace property
+     * 
+     * @return The replace property.
+     */
+    
     public function getReplace() :? bool
     {
         return $this->replace;
     }
 
+    /**
+     * It creates a new document in the collection.
+     * 
+     * @param Transaction transaction The transaction object.
+     * @param Statement statement The statement to be executed.
+     * @param Document document The document to be inserted.
+     */
+    
     protected function action(Transaction $transaction, Statement $statement, Document $document) : void
     {
         $this->setDocumentMetadataRegex('_$0_at');

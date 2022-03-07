@@ -8,6 +8,8 @@ use Entity\Validation;
 
 use ArangoDB\entity\common\Arango;
 
+/* An edge is a connection between two vertices */
+
 abstract class Edge extends Arango
 {
     const INBOUND = 'inbound';
@@ -34,6 +36,14 @@ abstract class Edge extends Arango
 
     protected $direction;
 
+    /**
+     * * Add a field for each of the DISTINCTIVE properties.
+     * * Set the pattern for each field to be a ShowString.
+     * * Set the uniqueness constraint for each field to be the type of the entity.
+     * * Set the field to be protected.
+     * * Set the field to be required
+     */
+    
     protected function before() : void
     {
         foreach (static::DISTINCTIVE as $name) {
@@ -48,22 +58,48 @@ abstract class Edge extends Arango
         parent::before();
     }
 
+    /**
+     * Get the name of the class
+     * 
+     * @return The short name of the class.
+     */
+    
     public static function getName() : string
     {
         $static = new static();
         return $static->getReflection()->getShortName();
     }
 
+    /**
+     * It returns the direction of the arrow.
+     * 
+     * @return The direction of the sort.
+     */
+    
     public function getDirection() : string
     {
         return static::DIRECTION;
     }
 
+    /**
+     * Returns the target of the current request
+     * 
+     * @return The target of the migration.
+     */
+    
     public function getTarget() : string
     {
         return static::TARGET;
     }
 
+    /**
+     * * Set the force direction of the object
+     * 
+     * @param string direction The direction of the force.
+     * 
+     * @return The object itself.
+     */
+    
     public function setForceDirection(string $direction) : self
     {
         if (!in_array($direction, static::ADMITTED)) throw new CustomException('developer/direction');
@@ -71,6 +107,12 @@ abstract class Edge extends Arango
         return $this;
     }
 
+    /**
+     * Returns the force direction if it exists, otherwise returns null
+     * 
+     * @return The direction value.
+     */
+    
     public function getForceDirection() :? string
     {
         return $this->direction;

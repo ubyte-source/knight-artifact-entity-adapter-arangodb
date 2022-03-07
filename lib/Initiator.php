@@ -10,6 +10,8 @@ use ArangoDB\entity\Vertex;
 use ArangoDB\entity\common\Arango;
 use ArangoDB\operations\common\Base;
 
+/* The Initiator is a class that is used to start a query */
+
 final class Initiator
 {
     const ADAPTER_V_NAME = 'Vertex';
@@ -18,20 +20,43 @@ final class Initiator
     protected $start = [];     // (array) Vertex
     protected $adapter = true; // (bool)
 
+    /**
+     * This is the constructor function
+     */
+
     protected function __construct() {}
 
+    /**
+     * Get the namespace name of the class
+     * 
+     * @return The namespace name of the class.
+     */
+    
     public static function getNamespaceName() : string
     {
         $class = new ReflectionClass(static::class);
         return $class->getNamespaceName();
     }
 
+    /**
+     * Attach an adapter to an entity
+     * 
+     * @param Arango entity The entity to attach the adapter to.
+     * @param string adapter_name The name of the adapter to use.
+     */
+    
     public static function entityAttachAdapter(Arango $entity, string $adapter_name) : void
     {
         $namespace = static::getNamespaceName();
         $entity->useAdapter($adapter_name, $namespace);
     }
 
+    /**
+     * Clone the object and all its properties
+     * 
+     * @return The object is being cloned and the object is being returned.
+     */
+    
     public function __clone()
     {
         $variables = get_object_vars($this);
@@ -46,6 +71,15 @@ final class Initiator
         });
     }
 
+    /**
+     * If the method name is not a valid operation, throw an exception
+     * 
+     * @param string method The name of the method that was called.
+     * @param array arguments The arguments passed to the method.
+     * 
+     * @return The `__call` method returns an instance of the `Base` class.
+     */
+    
     public function __call(string $method, array $arguments) : Base
     {
         $name = strtolower($method);
@@ -58,6 +92,12 @@ final class Initiator
         throw new CustomException('developer/arangodb/initiator/operation');
     }
 
+    /**
+     * Creates a new instance of the class and adds the given vertices to the start array
+     * 
+     * @return The instance of the class.
+     */
+    
     public static function start(Vertex ...$vertices) : self
     {
         $instance = new static();
@@ -69,6 +109,14 @@ final class Initiator
         return $instance;
     }
 
+    /**
+     * If the adapter is set to true, then the adapter manager is called on each vertex
+     * 
+     * @param bool adapter If true, the adapter will be used.
+     * 
+     * @return The object itself.
+     */
+    
     public function setUseAdapter(bool $adapter = true) : self
     {
         $this->adapter = $adapter;
@@ -77,11 +125,23 @@ final class Initiator
         return $this;
     }
 
+    /**
+     * Returns the value of the `adapter` property
+     * 
+     * @return The value of the `adapter` property.
+     */
+    
     public function getUseAdapter() : bool
     {
         return $this->adapter;
     }
 
+    /**
+     * * Push a vertex to the start of the list
+     * 
+     * @return Nothing.
+     */
+    
     protected function push(Vertex ...$vertices) : void
     {
         $first = $this->begin();
@@ -97,23 +157,48 @@ final class Initiator
         array_push($this->start, ...$vertices);
     }
 
+    /**
+     * Returns the start of the current iteration
+     * 
+     * @return An array of integers.
+     */
+    
     public function getStart() : array
     {
         return $this->start;
     }
 
+    /**
+     * Return the first vertex in the graph
+     * 
+     * @return The first vertex in the start list.
+     */
+    
     public function begin() :? Vertex
     {
         $start = $this->getStart();
         return reset($start) ?: null;
     }
 
+    /**
+     * Reset the start array
+     * 
+     * @return The object itself.
+     */
+    
     public function reset() : self
     {
         $this->start = [];
         return $this;
     }
 
+    /**
+     * If the adapter is not being used, remove it from the vertex. If the adapter is being used, add
+     * it to the vertex
+     * 
+     * @param Vertex vertex The vertex to attach the adapter to.
+     */
+    
     protected function adapterManager(Vertex $vertex) : void
     {
         if (false === $this->getUseAdapter() && $vertex->hasAdapter()) {

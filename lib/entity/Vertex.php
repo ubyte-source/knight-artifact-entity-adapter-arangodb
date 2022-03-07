@@ -7,6 +7,9 @@ use Entity\Validation;
 
 use ArangoDB\entity\common\Arango;
 
+/* Vertex is an abstract class that extends Arango and defines a set of fields that are required for
+all vertices */
+
 abstract class Vertex extends Arango
 {
     const TYPE = 'vertex';
@@ -17,6 +20,13 @@ abstract class Vertex extends Arango
         Vertex::OWNER
     ];
 
+    /**
+     * * Add a field for each of the management fields.
+     * * Set the pattern for each field to be a number.
+     * * Set the field to be protected.
+     * * Set the field to be required
+     */
+    
     protected function before() : void
     {
         parent::before();

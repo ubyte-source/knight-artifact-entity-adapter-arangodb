@@ -17,6 +17,8 @@ use ArangoDB\operations\common\choose\Strict;
 use ArangoDB\operations\common\choose\Limit;
 use ArangoDB\operations\features\Match;
 
+/* The Choose class is used to choose a vertex or edge from a collection */
+
 abstract class Choose extends Base
 {
     use Match, Strict;
@@ -33,23 +35,51 @@ abstract class Choose extends Base
     protected $variable_start;        // (string)
     protected $limit;                 // Limit
 
+    /**
+     * The constructor for the PHP class is the same as the constructor for the C# class
+     * 
+     * @param Initiator core The core object that is used to access the database.
+     */
+    
     public function __construct(Initiator $core, ...$arguments)
     {
         parent::__construct($core, ...$arguments);
         $this->setLimit(new Limit());
     }
 
+    /**
+     * *This function is used to set the `with` property of the `QueryBuilder` class.*
+     * 
+     * The `with` property is used to determine whether or not to use the `WITH` clause in the query
+     * 
+     * @param bool with Whether or not to use the with keyword.
+     * 
+     * @return The object itself.
+     */
+    
     public function useWith(bool $with = true) : self
     {
         $this->with = $with;
         return $this;
     }
 
+    /**
+     * Returns an array of the collections that the current user has access to
+     * 
+     * @return An array of the collections that are being included in the query.
+     */
+    
     public function getWithCollections() : array
     {
         return $this->with_collections;
     }
 
+    /**
+     * This function returns an array of all the collections in the database
+     * 
+     * @return An array of strings.
+     */
+    
     public function getWithCollectionsParsed() : array
     {
         $parser = $this->getCore()->getStart();
@@ -61,22 +91,46 @@ abstract class Choose extends Base
         return $smooth;
     }
 
+    /**
+     * Add a collection to the list of collections to be included in the query
+     * 
+     * @return The object itself.
+     */
+    
     public function pushWithCollection(string ...$with_collections) : self
     {
         array_push($this->with_collections, ...$with_collections);
         return $this;
     }
 
+    /**
+     * Get the limit for the query
+     * 
+     * @return The limit object.
+     */
+    
     public function getLimit() : Limit
     {
         return $this->limit;
     }
 
+    /**
+     * This function executes the SQL statement and returns the results
+     * 
+     * @return The result of the executed Statement.
+     */
+    
     public function run() :? array
     {
         return $this->getStatement()->execute();
     }
 
+    /**
+     * This function creates a query for the traversal of the graph
+     * 
+     * @return The query is being returned.
+     */
+    
     public function getStatement() : Statement
     {
         $start = $this->getCore()->getStart();
@@ -169,6 +223,15 @@ abstract class Choose extends Base
         return $statement;
     }
 
+    /**
+     * If the first document has a _key field, or if the first document has a _id field and it is not
+     * the default value, then we should search
+     * 
+     * @param Initiator initiator The initiator object.
+     * 
+     * @return The `shouldSearch` method returns a boolean value.
+     */
+    
     protected static function shouldSearch(Initiator $initiator) : bool
     {
         $start = $initiator->getStart();
@@ -184,6 +247,14 @@ abstract class Choose extends Base
         return $search;
     }
 
+    /**
+     * If a limit is set, it will be added to the query
+     * 
+     * @param Statement statement The statement to be modified.
+     * 
+     * @return The query with the LIMIT clause.
+     */
+    
     protected function shouldLimit(Statement $statement) : Statement
     {
         $limit = $this->getLimit();
@@ -203,16 +274,36 @@ abstract class Choose extends Base
         return $statement->overwrite($query);
     }
 
+    /**
+     * Set the limit for the query
+     * 
+     * @param Limit limit The limit to apply to the query.
+     */
+    
     protected function setLimit(Limit $limit) : void
     {
         $this->limit = $limit;
     }
 
+    /**
+     * Returns the value of the `with` property
+     * 
+     * @return The value of the `with` property.
+     */
+    
     protected function getWith() : bool
     {
         return $this->with;
     }
 
+    /**
+     * The function checks if the shortest path algorithm is being used, and if so, it checks if the
+     * shortest path algorithm should be pruned. If so, it adds a prune statement to the query
+     * 
+     * @param Parser parser The parser object.
+     * @param Statement statement The statement object that we're adding the filter to.
+     */
+    
     protected function setPrimaryConditions(Parser $parser, Statement $statement) : void
     {
         $traversal = $this->getPointer(static::TRAVERSAL);
@@ -242,6 +333,16 @@ abstract class Choose extends Base
         $statement->append($edges);
     }
 
+    /**
+     * Given a statement and an entity, return the conditions that must be met in order to find the
+     * entity
+     * 
+     * @param Statement statement The statement to be executed.
+     * @param Entity entity The entity to be deleted.
+     * 
+     * @return The conditions for the query.
+     */
+    
     protected function primary(Statement $statement, Entity $entity) : string
     {
         $pointer = Edge::TYPE === $entity->getType() ? static::EDGE : static::VERTEX;

@@ -13,6 +13,9 @@ use ArangoDBClient\Connection;
 use ArangoDBClient\ServerException;
 use ArangoDBClient\Transaction as ClientTransaction;
 
+/* The Transaction class is a class that allows you to execute a series of statements in a single
+transaction */
+
 class Transaction
 {
     use Modifier;
@@ -23,6 +26,12 @@ class Transaction
     protected $reader = [];                             // (array)
     protected $exception_message_default = 'Rollback!'; // (string)
 
+    /**
+     * Clone the object and all of its properties
+     * 
+     * @return Nothing.
+     */
+    
     public function __clone()
     {
         $variables = get_object_vars($this);
@@ -35,11 +44,21 @@ class Transaction
         });
     }
 
+    /**
+     * This function is called when the class is instantiated
+     */
+    
     public function __construct()
     {
         $this->start();
     }
 
+    /**
+     * This function starts the database connection and locks the database for writing
+     * 
+     * @return The object itself.
+     */
+    
     public function start() : self
     {
         $this->removeAllStatements();
@@ -51,17 +70,35 @@ class Transaction
         return $this;
     }
 
+    /**
+     * Add a statement to the end of the list of statements
+     * 
+     * @return The object itself.
+     */
+    
     public function pushStatements(Statement ...$statements) : self
     {
         array_push($this->statements, ...$statements);
         return $this;
     }
 
+    /**
+     * Returns the statements that were executed during the transaction
+     * 
+     * @return An array of statements.
+     */
+    
     public function getStatements() : array
     {
         return $this->statements;
     }
 
+    /**
+     * Open the specified collections in read mode
+     * 
+     * @return The object itself.
+     */
+    
     public function openCollectionsReadMode(string ...$collections) : self
     {
         $reader = $this->getLockRead();
@@ -70,11 +107,23 @@ class Transaction
         return $this;
     }
 
+    /**
+     * Returns the current reader lock
+     * 
+     * @return An array of locks that are currently held for reading.
+     */
+    
     public function getLockRead() : array
     {
         return $this->reader;
     }
 
+    /**
+     * Open the specified collections in write mode
+     * 
+     * @return The object itself.
+     */
+    
     public function openCollectionsWriteMode(string ...$collections) : self
     {
         $writer = $this->getLockWrite();
@@ -83,28 +132,60 @@ class Transaction
         return $this;
     }
 
+    /**
+     * Returns the writer lock
+     * 
+     * @return An array of the lock types that are currently held by the writer.
+     */
+    
     public function getLockWrite() : array
     {
         return $this->writer;
     }
 
+    /**
+     * * Set the edge_first property to the given value
+     * 
+     * @param bool use Whether or not to use the first and last nodes in the path.
+     * 
+     * @return The object itself.
+     */
+    
     public function setEdgeFirst(bool $use = true) : self
     {
         $this->edge_first = $use;
         return $this;
     }
 
+    /**
+     * Set the default exception message
+     * 
+     * @param string message The message to be displayed when the exception is thrown.
+     * 
+     * @return The object itself.
+     */
+    
     public function setExceptionMessageDefault(string $message) : Statement
     {
         $this->exception_message_default = $message;
         return $this;
     }
 
+    /**
+     * Returns the default exception message
+     * 
+     * @return The exception message default.
+     */
+    
     public function getExceptionMessageDefault() : string
     {
         return $this->exception_message_default;
     }
 
+    /**
+     * It executes the statements in the transaction
+     */
+    
     public function commit() :? array
     {
         $statements = $this->getStatements();
@@ -204,21 +285,39 @@ class Transaction
         return $execute;
     }
 
+    /**
+     * Returns the value of the edge_first property
+     * 
+     * @return The value of the protected member variable `edge_first`.
+     */
+    
     protected function getEdgeFirst() : bool
     {
         return $this->edge_first;
     }
 
+    /**
+     * Initialize the reader array
+     */
+    
     protected function initializeLockRead() : void
     {
         $this->reader = [];
     }
 
+    /**
+     * Initialize the writer array
+     */
+    
     protected function initializeLockWrite() : void
     {
         $this->writer = [];
     }
 
+    /**
+     * Remove all statements from the statements array
+     */
+    
     protected function removeAllStatements() : void
     {
         $this->statements = [];

@@ -8,12 +8,24 @@ use ArangoDB\operations\common\Handling;
 use ArangoDB\operations\common\base\Document;
 use ArangoDB\operations\features\Metadata;
 
+/* Remove documents from a collection */
+
 class Remove extends Handling
 {
     use Metadata;
 
     const ITERATION = 'iteration';
 
+    /**
+     * *This function is called before the loop is executed.*
+     * 
+     * The `before` function is called before the loop is executed. This is where you can add any
+     * additional code that you want to add before the loop is executed
+     * 
+     * @param Statement statement The statement that will be modified.
+     * @param Document data The data to be iterated over.
+     */
+    
     protected function before(Statement $statement, Document $data) : void
     {
         $statement->append('FOR');
@@ -22,6 +34,14 @@ class Remove extends Handling
         $statement->append($data->getEntity()->getCollectionName());
     }
 
+    /**
+     * If the document matches the conditions, remove the document from the collection
+     * 
+     * @param Transaction transaction The transaction object.
+     * @param Statement statement The statement that will be executed.
+     * @param Document document The document that is being removed.
+     */
+    
     protected function action(Transaction $transaction, Statement $statement, Document $document) : void
     {
         $iterations = $this->getPointer(static::ITERATION);

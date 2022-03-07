@@ -8,10 +8,19 @@ use ArangoDB\Parser;
 use ArangoDB\Statement;
 use ArangoDB\operations\common\Choose;
 
+/* This class is used to find the shortest path between two vertices */
+
 class Shortestpath extends Choose
 {
     const SHORTEST = 'shortest';
 
+    /**
+     * * For each vertex in the collection, find the shortest path to the vertex
+     * 
+     * @param Parser parser The parser object.
+     * @param Statement statement The statement object to append the generated Cypher to.
+     */
+    
     protected function main(Parser $parser, Statement $statement) : void
     {
         $collections = $parser->getTargetsVertexName();
@@ -32,6 +41,24 @@ class Shortestpath extends Choose
         $statement->append($this->getPointer(static::SHORTEST));
     }
 
+    /**
+     * If the statement is a SELECT statement, and the statement is using the shortest path algorithm,
+     * and the statement is using the shortest path algorithm, and the statement is using the shortest
+     * path algorithm, and the statement is using the shortest path algorithm, and the statement is
+     * using the shortest path algorithm, and the statement is using the shortest path algorithm, and
+     * the statement is using the shortest path algorithm, and the statement is using the shortest path
+     * algorithm, and the statement is using the shortest path algorithm, and the statement is using
+     * the shortest path algorithm, and the statement is using the shortest path algorithm, and the
+     * statement is using the shortest path algorithm, and the statement is using the shortest path
+     * algorithm, and the statement is using the shortest path algorithm, and the statement is using
+     * the shortest path algorithm, and the statement is using the shortest path algorithm, and the
+     * statement is using the shortest path algorithm, and the statement is using the shortest path
+     * algorithm, and the statement is using the shortest path algorithm, and the
+     * 
+     * @param Parser parser The parser object.
+     * @param Statement statement The statement to manipulate.
+     */
+    
     protected function manipulate(Parser $parser, Statement $statement) : void
     {
         $statement_traversal = $this->getPointer(Choose::TRAVERSAL);

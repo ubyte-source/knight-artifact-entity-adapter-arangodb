@@ -6,6 +6,8 @@ use Entity\Map as Entity;
 use Entity\Field;
 use Entity\Validation;
 
+/* This class is an abstract class that defines the basic structure of an ArangoDB entity */
+
 abstract class Arango extends Entity
 {
     //const TYPE = 'edge|vertex|table';
@@ -15,6 +17,12 @@ abstract class Arango extends Entity
     const REV = '_rev';
     const SEPARATOR = '/';
 
+    /**
+     * Returns the type of the object
+     * 
+     * @return The `getType()` method returns the `TYPE` constant from the `ReflectionConstants` class.
+     */
+    
     public function getType() :? string
     {
         $reflection_constants = $this->getReflection();
@@ -22,6 +30,12 @@ abstract class Arango extends Entity
         return array_key_exists('TYPE', $reflection_constants) ? static::TYPE : null;
     }
 
+    /**
+     * Add the fields to the collection
+     * 
+     * @return The return value is the result of the validation.
+     */
+    
     protected function before() : void
     {
         $id = $this->addField(Arango::ID);

@@ -4,10 +4,18 @@ namespace ArangoDB\parser;
 
 use ArangoDB\operations\common\base\Document;
 
+/* A route is a collection of documents */
+
 class Route
 {
     protected $documents = []; // (array) Document
 
+    /**
+     * Clone the object and all of its properties
+     * 
+     * @return Nothing.
+     */
+    
     public function __clone()
     {
         $variables = get_object_vars($this);
@@ -20,6 +28,12 @@ class Route
         });
     }
 
+    /**
+     * Add a document to the list of documents
+     * 
+     * @return The object itself.
+     */
+    
     public function pushDocuments(Document ...$pushed) : self
     {
         $documents = $this->getDocuments();
@@ -37,6 +51,12 @@ class Route
         return $this;
     }
 
+    /**
+     * Get the documents from the database
+     * 
+     * @return An array of Document objects.
+     */
+    
     public function getDocuments() : array
     {
         return $this->documents;

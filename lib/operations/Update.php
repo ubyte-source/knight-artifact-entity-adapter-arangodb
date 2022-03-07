@@ -13,6 +13,8 @@ use ArangoDB\operations\features\Metadata;
 use ArangoDB\operations\features\Uniqueness;
 use ArangoDB\operations\features\Match;
 
+/* This class is used to update a document in a collection */
+
 class Update extends Handling
 {
     use Metadata, Uniqueness;
@@ -23,17 +25,42 @@ class Update extends Handling
     protected $remover = []; // (array)
     protected $replace;      // (bool)
 
+    /**
+     * * Set the replace parameter to true or false
+     * 
+     * @param bool replace If true, the existing table will be dropped and recreated.
+     * 
+     * @return The object itself.
+     */
+    
     public function setReplace(bool $replace) : self
     {
         $this->replace = $replace;
         return $this;
     }
 
+    /**
+     * Returns the value of the replace property
+     * 
+     * @return The replace property.
+     */
+    
     public function getReplace() :? bool
     {
         return $this->replace;
     }
 
+    /**
+     * * For each document in the collection, if the document does not exist in the collection, then
+     * create the document.
+     * * If the document exists in the collection, then update the document.
+     * * Return the new document and the old document
+     * 
+     * @param Transaction transaction The transaction object.
+     * @param Statement statement The statement that will be executed.
+     * @param Document document The document that is being updated.
+     */
+    
     protected function action(Transaction $transaction, Statement $statement, Document $document) : void
     {
         $this->setDocumentMetadataRegex('_$0_at');

@@ -15,21 +15,50 @@ use ArangoDB\operations\common\Choose;
 use ArangoDB\operations\common\choose\strict\Condition;
 use ArangoDB\operations\common\choose\strict\Hop;
 
+/* This code is a trait that is used to add strictness to the query. */
+
 trait Strict
 {
     protected $strict = true; // (bool)
 
+    /**
+     * *This function sets the strict mode of the class.*
+     * 
+     * The `useStrict()` function is used to set the strict mode of the class. 
+     * 
+     * @param bool strict If true, the validator will throw an exception if the value does not match
+     * the schema. If false, the validator will return false if the value does not match the schema.
+     * 
+     * @return The object itself.
+     */
+    
     public function useStrict(bool $strict = true) : self
     {
         $this->strict = $strict;
         return $this;
     }
 
+    /**
+     * Returns the value of the strict property
+     * 
+     * @return The value of the strict property.
+     */
+    
     protected function getStrict() : bool
     {
         return $this->strict;
     }
 
+    /**
+     * * For each route in the parser, create a new object and add it to the response array.
+     * * For each document in the route, create a new object and add it to the response array.
+     * 
+     * @param Parser parser The parser object.
+     * @param Statement statement The statement to be executed.
+     * 
+     * @return The `getHop` method returns an array of `Hop` objects.
+     */
+    
     protected function getHop(Parser $parser, Statement $statement) : array
     {
         $first = $this->getCore()->begin();
@@ -77,6 +106,16 @@ trait Strict
         return $response;
     }
 
+    /**
+     * * For each route in the container, create a condition object.
+     * * For each hop in the route, create a statement object.
+     * * For each hop in the route, create a match object.
+     * 
+     * @param string type the type of the route, either "match" or "filter"
+     * 
+     * @return The `getExpressionRoutes` method returns an array of `Condition` objects.
+     */
+    
     protected function getExpressionRoutes(string $type, stdClass ...$container_match_routes)
     {
         $response = [];
@@ -123,12 +162,30 @@ trait Strict
         return $response;
     }
 
+    /**
+     * Get the pointer to the iteration of the specified type
+     * 
+     * @param string type The type of the parameter.
+     * 
+     * @return The pointer to the iteration of the type.
+     */
+    
     protected function getTypeIteration(string $type) : string
     {
         $iteration = $type . chr(69);
         return $this->getPointer($iteration);
     }
 
+    /**
+     * This function is responsible for defining the type of route 
+     * designed by the developer
+     * 
+     * @param Parser parser The parser object.
+     * @param Statement statement The statement to add the condition to.
+     * 
+     * @return The result of the query.
+     */
+    
     protected function addStrict(Parser $parser, Statement $statement) : void
     {  
         $hops = $this->getHop($parser, $statement);
@@ -252,6 +309,15 @@ trait Strict
         }
     }
 
+    /**
+     * If the strict mode is enabled, and there are no documents in the route, then we should use
+     * strict mode
+     * 
+     * @param Parser parser The parser object.
+     * 
+     * @return The `shouldUseStrict` method returns a boolean value.
+     */
+    
     protected function shouldUseStrict(Parser $parser) : bool
     {
         if (false === $this->getStrict()) return false;

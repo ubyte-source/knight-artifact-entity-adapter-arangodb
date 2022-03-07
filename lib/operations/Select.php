@@ -10,12 +10,21 @@ use ArangoDB\operations\features\Prune;
 use ArangoDB\entity\Vertex;
 use ArangoDB\entity\common\Arango;
 
+/* This class is used to create a traversal query */
+
 class Select extends Choose
 {
     use Prune;
 
     protected $max_hop; // (int)
 
+    /**
+     * If the query is a simple query, then it will return the document. If the query is a complex
+     * query, then it will return the document and the sub-query
+     * 
+     * @param Parser parser The parser object.
+     */
+    
     protected function overwrite(Parser $parser, Vertex ...$start_vertices) : Statement
     {
         $statement = new Statement();
@@ -82,6 +91,14 @@ class Select extends Choose
         return $statement;
     }
 
+    /**
+     * * For each vertex, edge, and traversal in the range of 1 to the maximum hop, 
+     *   choose a start vertex
+     * 
+     * @param Parser parser The parser object.
+     * @param Statement statement The statement to which the FOR loop is appended.
+     */
+    
     protected function main(Parser $parser, Statement $statement) : void
     {
         $max = $this->getMaxHop() ?? '1e3';
@@ -100,12 +117,28 @@ class Select extends Choose
         $statement->append($statement_variable_start);
     }
 
+    /**
+     * * Set the maximum number of hops for the packet
+     * 
+     * @param int hop The number of hops to take.
+     * 
+     * @return The object itself.
+     */
+    
     public function setMaxHop(int $hop) : self
     {
         $this->max_hop = $hop;
         return $this;
     }
 
+    /**
+     * "Get the maximum number of hops."
+     * 
+     * The function name is getMaxHop
+     * 
+     * @return The max_hop property of the object.
+     */
+    
     public function getMaxHop() :? int
     {
         return $this->max_hop;
