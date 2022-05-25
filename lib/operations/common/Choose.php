@@ -15,13 +15,13 @@ use ArangoDB\operations\common\base\Document;
 use ArangoDB\operations\common\Base;
 use ArangoDB\operations\common\choose\Strict;
 use ArangoDB\operations\common\choose\Limit;
-use ArangoDB\operations\features\Match;
+use ArangoDB\operations\features\Matching;
 
 /* The Choose class is used to choose a vertex or edge from a collection */
 
 abstract class Choose extends Base
 {
-    use Match, Strict;
+    use Matching, Strict;
 
     const EDGE = 'mie';
     const VERTEX = 'miv';

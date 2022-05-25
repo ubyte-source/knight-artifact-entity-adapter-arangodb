@@ -26,7 +26,7 @@ library:
 
 <br>
 
-#### ***Class ArangoDB\operations\features\Match usable methods***
+#### ***Class ArangoDB\operations\features\Matching usable methods***
 
 ##### `protected function matches(string $name, Statement $statement, Document ...$documents) : array`
 

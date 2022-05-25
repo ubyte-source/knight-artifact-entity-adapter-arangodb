@@ -10,7 +10,7 @@ use ArangoDB\operations\common\base\Document;
 /* The `trait` keyword is used to create a trait. A trait is a collection of methods that can be used
 as if they were part of the class in which they are declared. */
 
-trait Match
+trait Matching
 {
     protected $or = []; // (array) Entity
 

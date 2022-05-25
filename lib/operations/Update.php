@@ -11,7 +11,6 @@ use ArangoDB\operations\common\Handling;
 use ArangoDB\operations\common\base\Document;
 use ArangoDB\operations\features\Metadata;
 use ArangoDB\operations\features\Uniqueness;
-use ArangoDB\operations\features\Match;
 
 /* This class is used to update a document in a collection */
 

@@ -16,13 +16,13 @@ use ArangoDB\entity\common\Arango;
 use ArangoDB\operations\common\Base;
 use ArangoDB\operations\common\base\Document;
 use ArangoDB\operations\common\handling\Modifier;
-use ArangoDB\operations\features\Match;
+use ArangoDB\operations\features\Matching;
 
 /* The Handling class is a base class for handling the data */
 
 abstract class Handling extends Base
 {
-    use Modifier, Match;
+    use Modifier, Matching;
 
     const RNEW = 'NEW';
     const ROLD = 'OLD';
