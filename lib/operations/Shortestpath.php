@@ -42,18 +42,7 @@ class Shortestpath extends Choose
     }
 
     /**
-     * If the statement is a SELECT statement, and the statement is using the shortest path algorithm,
-     * and the statement is using the shortest path algorithm, and the statement is using the shortest
-     * path algorithm, and the statement is using the shortest path algorithm, and the statement is
-     * using the shortest path algorithm, and the statement is using the shortest path algorithm, and
-     * the statement is using the shortest path algorithm, and the statement is using the shortest path
-     * algorithm, and the statement is using the shortest path algorithm, and the statement is using
-     * the shortest path algorithm, and the statement is using the shortest path algorithm, and the
-     * statement is using the shortest path algorithm, and the statement is using the shortest path
-     * algorithm, and the statement is using the shortest path algorithm, and the statement is using
-     * the shortest path algorithm, and the statement is using the shortest path algorithm, and the
-     * statement is using the shortest path algorithm, and the statement is using the shortest path
-     * algorithm, and the statement is using the shortest path algorithm, and the
+     * If the statement is a select statement, and the statement is using the shortest path algorithm.
      * 
      * @param Parser parser The parser object.
      * @param Statement statement The statement to manipulate.

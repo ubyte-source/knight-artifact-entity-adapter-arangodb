@@ -6,14 +6,11 @@ use ArangoDB\Statement;
 use ArangoDB\Transaction;
 use ArangoDB\operations\common\Handling;
 use ArangoDB\operations\common\base\Document;
-use ArangoDB\operations\features\Metadata;
 
 /* Remove documents from a collection */
 
 class Remove extends Handling
 {
-    use Metadata;
-
     const ITERATION = 'iteration';
 
     /**

@@ -8,14 +8,13 @@ use ArangoDB\Statement;
 use ArangoDB\Transaction;
 use ArangoDB\operations\common\Handling;
 use ArangoDB\operations\common\base\Document;
-use ArangoDB\operations\features\Metadata;
 use ArangoDB\operations\features\Uniqueness;
 
 /* This class is used to upsert documents into a collection */
 
 class Upsert extends Handling
 {
-    use Metadata, Uniqueness;
+    use Uniqueness;
 
     const RESPONSE = '{type: "%s", collection: "%s", document: %s, replaced: %s ? %s : null}';
 
@@ -57,8 +56,6 @@ class Upsert extends Handling
     
     protected function action(Transaction $transaction, Statement $statement, Document $document) : void
     {
-        $this->setDocumentMetadataRegex('_$0_at');
-
         $collection_name = $document->getEntity()->getCollectionName();
         $collection_type = $document->getEntity()->getType();
 
@@ -72,7 +69,7 @@ class Upsert extends Handling
         $statement->append('UPSERT');
         $statement->append($document_uniqueness);
 
-        $document_metadata = $this->addDocumentMetadata($statement, $document, 'created', 'updated');
+        $document_metadata = clone $document;
 
         $deprecated = $document->getEntity()->getAllFieldsKeys();
         $deprecated = array_diff($deprecated, $document->getEntity()->getAllFieldsRequiredName());
@@ -89,21 +86,13 @@ class Upsert extends Handling
         $statement->append(chr(41), false);
         $statement->append(chr(41));
 
-        $created = $this->getDocumentMetadataRegex();
-        $created = str_replace('$0', 'created', $created);
-        $document_created = Handling::ROLD . chr(46) . $created;
-        $statement->pushSkipValues($document_created);
-
-        $document_metadata = $this->addDocumentMetadata($statement, $document, 'created', 'updated');
-        $document_metadata->setValue($created, $document_created);
-
         $mode = $this->getReplace() === true;
         $mode = $mode ? 'REPLACE' : 'UPDATE';
 
         $statement->append($mode);
         $statement->append('FIRST' . chr(40), false);
         $statement->append('LET x =');
-        $statement->append($statement->bindDocument(false, $document_metadata));
+        $statement->append($statement->bindDocument(false, $document));
         $statement->append('RETURN MERGE' . chr(40), false);
         $statement->append('FOR i IN ATTRIBUTES(x)');
         $statement->append('FILTER !IS_NULL(x[i])');

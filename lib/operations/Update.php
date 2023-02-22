@@ -9,14 +9,13 @@ use ArangoDB\Transaction;
 use ArangoDB\entity\common\Arango;
 use ArangoDB\operations\common\Handling;
 use ArangoDB\operations\common\base\Document;
-use ArangoDB\operations\features\Metadata;
 use ArangoDB\operations\features\Uniqueness;
 
 /* This class is used to update a document in a collection */
 
 class Update extends Handling
 {
-    use Metadata, Uniqueness;
+    use Uniqueness;
 
     const SEARCH = 'search';
     const RESPONSE = '{type: "%s", collection: "%s", document: %s, replaced: %s}';
@@ -62,8 +61,6 @@ class Update extends Handling
     
     protected function action(Transaction $transaction, Statement $statement, Document $document) : void
     {
-        $this->setDocumentMetadataRegex('_$0_at');
-
         $collection_name = $document->getEntity()->getCollectionName();
         $collection_type = $document->getEntity()->getType();
 
@@ -73,7 +70,7 @@ class Update extends Handling
         $statement->append('IN');
         $statement->append($collection_name);
 
-        $document_metadata = $this->addDocumentMetadata($statement, $document, 'created', 'updated');
+        $document_metadata = clone $document;
         $document_metadata->unsetFields(Arango::KEY);
 
         $uniqueness = static::getUniquenessMatch($document_metadata);
@@ -87,12 +84,6 @@ class Update extends Handling
         $mode = $this->getReplace() === true ? 'REPLACE' : 'UPDATE';
         $statement->append($mode);
         $statement->append(static::SEARCH);
-
-        $created = $this->getDocumentMetadataRegex();
-        $created = str_replace('$0', 'created', $created);
-        $document_metadata_value = static::SEARCH . chr(46) . $created;
-        $document_metadata->setValue($created, $document_metadata_value);
-        $statement->pushSkipValues($document_metadata_value);
 
         $deprecated = $document->getEntity()->getAllFieldsKeys();
         $deprecated = array_diff($deprecated, $document->getEntity()->getAllFieldsRequiredName());
