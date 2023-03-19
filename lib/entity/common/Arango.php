@@ -15,6 +15,8 @@ abstract class Arango extends Entity
     const ID = '_id';
     const KEY = '_key';
     const REV = '_rev';
+    const CREATED = '_created';
+    const MODIFIED = '_modified';
     const SEPARATOR = '/';
 
     /**
@@ -71,13 +73,13 @@ abstract class Arango extends Entity
         $rev->setPatterns($rev_pattern);
         $rev->setProtected();
 
-        $created_at = $this->addField('_created_at');
-		$created_at_validator = Validation::factory('DateTime', null, 'd-m-Y H:i:s', 'U');
+        $created_at = $this->addField(Arango::CREATED);
+		$created_at_validator = Validation::factory('DateTime', null, 'c');
 		$created_at->setPatterns($created_at_validator);
         $created_at->setProtected();
 
-		$updated_at = $this->addField('_updated_at');
-		$updated_at_validator = Validation::factory('DateTime', null, 'd-m-Y H:i:s', 'U');
+		$updated_at = $this->addField(Arango::MODIFIED);
+		$updated_at_validator = Validation::factory('DateTime', null, 'c');
 		$updated_at->setPatterns($updated_at_validator);
         $updated_at->setProtected();
     }
